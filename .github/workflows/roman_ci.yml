@@ -6,8 +6,8 @@ name: CI
 on:
   push:
     branches:
-      #- main
-      #- *.x'
+      - main
+      - *.x'
     tags:
       - '*'
   pull_request:
