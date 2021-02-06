@@ -62,4 +62,4 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install .[test]
     - name: Run tests
-      run: tox ${{ matrix.toxargs }} -e ${{ matrix.toxenv }} -- ${{ matrix.toxposargs }
+      run: tox ${{ matrix.toxargs }} -e ${{ matrix.toxenv }} -- ${{ matrix.toxposargs }}
