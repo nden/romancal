@@ -54,6 +54,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+          fetch-depth: 0
     - name: Set up Python ${{ matrix.python }}
       uses: actions/setup-python@v2
       with:
@@ -63,4 +65,4 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install .[test]
     - name: Run tests
-      run: tox ${{ matrix.toxargs }} -e ${{ matrix.toxenv }}
+      run: tox -e ${{ matrix.toxenv }}
