@@ -51,6 +51,21 @@ jobs:
             python: 3.8
             toxenv: py38-test-devdeps
 
+          - name: Python 3.8 with Numpy 1.20
+            os: ubuntu-latest
+            python: 3.8
+            toxenv: py38-test-numpy120
+
+          - name: macOS
+            os: macos-latest
+            python: 3.9
+            toxenv: py39-test
+
+          - name: Security audit
+            os: ubuntu-latest
+            python: 3.9
+            toxenv: bandit
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
