@@ -52,11 +52,12 @@ jobs:
             toxenv: py38-test-devdeps
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python }}
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ matrix.python }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
