@@ -66,6 +66,16 @@ jobs:
             python: 3.9
             toxenv: bandit
 
+          - name: Installed package with --pyargs
+            os: ubuntu-latest
+            python: 3.8
+            toxenv: pyargs
+
+          - name: Build documentation and check warnings
+            os: ubuntu-latest
+            python: 3.8
+            toxenv: build_docs
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
