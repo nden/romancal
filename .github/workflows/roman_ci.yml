@@ -6,11 +6,12 @@ name: CI
 on:
   push:
     branches:
-      - main
-      - '*.x'
+      #- main
+      #- *.x'
     tags:
       - '*'
   pull_request:
+    branches:
   schedule:
     # Weekly Monday 9AM build
     # * is a special character in YAML so you have to quote this string
@@ -23,12 +24,32 @@ env:
   CRDS_CLIENT_RETRY_DELAY_SECONDS: 20
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
+  tests:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: true
       matrix:
-        python-version: ['3.8']
+        include:
+          - name: Code style checks
+            os: ubuntu-latest
+            python: 3.x
+            toxenv: codestyle
+
+          - name: Python 3.8
+            os: ubuntu-latest
+            python: 3.8
+            toxenv: py38-test
+
+          - name: Python 3.9
+            os: ubuntu-latest
+            python: 3.9
+            toxenv: py39-test
+
+          - name: Python 3.8 with dev dependencies
+            os: ubuntu-latest
+            python: 3.8
+            toxenv: py38-test-devdeps
 
     steps:
     - uses: actions/checkout@v2
@@ -40,38 +61,5 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install .[test]
-    - name: Test with pytest
-      run: |
-        pytest
-  lint:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8
-    - name: Lint with flake8
-      run: |
-        flake8 romancal --count --show-source --statistics
-  bandit:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install bandit
-    - name: Security checks with bandit
-      run: |
-        bandit romancal -r -x tests
+    - name: Run tests
+      run: tox ${{ matrix.toxargs }} -e ${{ matrix.toxenv }} -- ${{ matrix.toxposargs }
