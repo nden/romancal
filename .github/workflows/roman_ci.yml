@@ -51,10 +51,10 @@ jobs:
             python: 3.8
             toxenv: py38-test-devdeps
 
-          - name: Python 3.8 with Numpy 1.20
+          - name: Python 3.8 with Numpy 1.19
             os: ubuntu-latest
             python: 3.8
-            toxenv: py38-test-numpy120
+            toxenv: py38-test-numpy119
 
           - name: macOS
             os: macos-latest
@@ -75,6 +75,17 @@ jobs:
             os: ubuntu-latest
             python: 3.8
             toxenv: build_docs
+
+          - name: Latest dependency versions w/coverage
+            os: ubuntu-latest
+            python: 3.8
+            toxenv: py38-cov
+
+          - name: Upload coverage to codecov
+            if: ${{ contains(matrix.toxenv,'-cov') }}
+            uses: codecov/codecov-action@v1
+            with:
+              file: ./coverage.xml
 
     steps:
     - name: Checkout code
