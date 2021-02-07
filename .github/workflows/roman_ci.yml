@@ -81,12 +81,6 @@ jobs:
             python: 3.8
             toxenv: py38-cov
 
-          - name: Upload coverage to codecov
-            if: ${{ contains(matrix.toxenv,'-cov') }}
-            uses: codecov/codecov-action@v1
-            with:
-              file: ./coverage.xml
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -107,3 +101,9 @@ jobs:
 
     - name: Run tests
       run: tox -e ${{ matrix.toxenv }}
+
+    - name: Upload coverage to codecov
+      if: ${{ contains(matrix.toxenv,'-cov') }}
+      uses: codecov/codecov-action@v1
+      with:
+        file: ./coverage.xml
