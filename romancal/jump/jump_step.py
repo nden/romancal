@@ -114,7 +114,7 @@ class JumpStep(RomanStep):
             readnoise_model.close()
             tstop = time.time()
             self.log.info('The execution time in seconds: %f', tstop - tstart)
-        result.groupdq = gdq
+        result.groupdq = gdq.squeeze()
         result.pixeldq = pdq
         #result.meta.cal_step.jump = 'COMPLETE'
 
