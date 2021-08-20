@@ -39,33 +39,38 @@ class JumpStep(RomanStep):
     def process(self, input):
 
         # Open input as a Roman DataModel (single integration; 3D arrays)
-        with rdd.RampModel(input) as input_model:
+        with rdd.open(input, mode='rw') as input_model:
 
             # Extract the needed info from the Roman Data Model
             meta = input_model.meta
             r_data = input_model.data
-            r_gdq = input_model.groupdq
-            r_pdq = input_model.pixeldq
-            r_err = input_model.err
+            r_gdq = input_model.groupdq#.copy()
+            #r_
+            pdq = input_model.pixeldq#.copy()
+            r_err = input_model.err#.copy()
 
-            frames_per_group = meta.exposure.nframes
+            frames_per_group = 1#meta.exposure.nframes
 
             # Modify the arrays for input into the 'common' jump (4D)
             data = np.array(np.broadcast_to(r_data, (1,) + r_data.shape), dtype=np.float32)
             gdq = np.array(np.broadcast_to(r_gdq, (1,) + r_gdq.shape))
-            pdq = np.array(np.broadcast_to(r_pdq, (1,) + r_pdq.shape))
+            #pdq = np.array(np.broadcast_to(r_pdq, (1,) + r_pdq.shape))
             err = np.array(np.broadcast_to(r_err, (1,) + r_err.shape))
+            #data = np.array(input_model.data, dtype=np.float32)
+            #gdq = input_model.groupdq.copy()
+            #pdq = input_model.pixeldq.copy()
+            #err = input_model.err.copy()
 
             tstart = time.time()
 
             # Check for an input model with NGROUPS<=2
             ngroups = data.shape[1]
-
+            result = input_model.copy()
             if ngroups <= 2:
                 self.log.warning('Cannot apply jump detection as NGROUPS<=2;')
                 self.log.warning('Jump step will be skipped')
 
-                result = input_model.copy()
+
 
                 result.meta.cal_step.jump = 'SKIPPED'
                 return result
@@ -92,16 +97,10 @@ class JumpStep(RomanStep):
             readnoise_filename = self.get_reference_file(input_model, 'readnoise')
             self.log.info('Using READNOISE reference file: %s',
                           readnoise_filename)
-            readnoise_model = rdd.ReadnoiseRefModel(readnoise_filename)
-            readnoise_2d = readnoise_model.data
+            #readnoise_model = rdd.ReadnoiseRefModel(readnoise_filename)
+            readnoise_model = rdd.open(readnoise_filename, mode='rw')
+            readnoise_2d = readnoise_model.data.copy()
 
-            dqflags_d = {}  # Dict of DQ flags
-            dqflags_d = {
-                "GOOD": dqflags.group["GOOD"],
-                "DO_NOT_USE": dqflags.group["DO_NOT_USE"],
-                "SATURATED":  dqflags.group["SATURATED"],
-                "JUMP_DET":  dqflags.group["JUMP_DET"]
-            }
 
             gdq, pdq = detect_jumps(frames_per_group, data, gdq, pdq, err,
                                     gain_2d, readnoise_2d, rej_thresh,
@@ -115,7 +114,8 @@ class JumpStep(RomanStep):
             readnoise_model.close()
             tstop = time.time()
             self.log.info('The execution time in seconds: %f', tstop - tstart)
-
-        result.meta.cal_step.jump = 'COMPLETE'
+        result.groupdq = gdq
+        result.pixeldq = pdq
+        #result.meta.cal_step.jump = 'COMPLETE'
 
         return result
