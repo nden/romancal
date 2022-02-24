@@ -8,6 +8,7 @@ on:
     branches:
       - main
       - '*.x'
+      - "*"
     tags:
       - '*'
   pull_request:
@@ -18,10 +19,10 @@ on:
     - cron: '0 9 * * 1'
 
 env:
-  CRDS_SERVER_URL: "https://roman-crds-test.stsci.edu"
+  #CRDS_SERVER_URL: "https://roman-crds-test.stsci.edu"
   CRDS_PATH: "/tmp/crds_cache"
-  CRDS_CLIENT_RETRY_COUNT: 3
-  CRDS_CLIENT_RETRY_DELAY_SECONDS: 20
+  #CRDS_CLIENT_RETRY_COUNT: 3
+  #CRDS_CLIENT_RETRY_DELAY_SECONDS: 20
 
 jobs:
   tox:
